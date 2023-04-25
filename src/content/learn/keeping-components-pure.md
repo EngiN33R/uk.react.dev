@@ -1,41 +1,41 @@
 ---
-title: Keeping Components Pure
+title: Підтримуємо чистоту компонентів
 ---
 
 <Intro>
 
-Some JavaScript functions are *pure.* Pure functions only perform a calculation and nothing more. By strictly only writing your components as pure functions, you can avoid an entire class of baffling bugs and unpredictable behavior as your codebase grows. To get these benefits, though, there are a few rules you must follow.
+Деякі функції в JavaScript є *чисті.* Чисті функції лише виконують обчислення й більше нічого. Пишучи компоненти як чисті функції, ви маєте змоги уникнути цілого ряду збиваючих з пантелику помилок та непередбачуваних поведінок по мірі розвитку вашого коду. Але щоб мати змоги повноцінно користатися цими перевагами, є деякі правила, яких треба дотримуватися.
 
 </Intro>
 
 <YouWillLearn>
 
-* What purity is and how it helps you avoid bugs
-* How to keep components pure by keeping changes out of the render phase
-* How to use Strict Mode to find mistakes in your components
+* Що таке чистота і як вона допомагає уникати помилок
+* Як дотримуватися чистоти компонентів, виносячи зміни з фази рендеру
+* Як користатися Strict Mode для пошуку помилок у компонентах
 
 </YouWillLearn>
 
-## Purity: Components as formulas {/*purity-components-as-formulas*/}
+## Чистота: Компоненти як формули {/*purity-components-as-formulas*/}
 
-In computer science (and especially the world of functional programming), [a pure function](https://wikipedia.org/wiki/Pure_function) is a function with the following characteristics:
+В інформатиці (зокрема у світі функціонального програмування), [чиста функція](https://uk.wikipedia.org/wiki/%D0%A7%D0%B8%D1%81%D1%82%D0%B0_%D1%84%D1%83%D0%BD%D0%BA%D1%86%D1%96%D1%8F) є функція з такими характеристиками:
 
-* **It minds its own business.** It does not change any objects or variables that existed before it was called.
-* **Same inputs, same output.** Given the same inputs, a pure function should always return the same result.
+* **Вона не сує носа в чужі справи.** Вона не зміняє ніякі об'екти або змінні, що існували перед тим як вона була викликана.
+* **Однакові входи, однакові виходи.** Якщо дані однакові входи, чиста функція завжди поверне однаковий результат.
 
-You might already be familiar with one example of pure functions: formulas in math.
+З одним прикладом чистих функцій ви мабуть уже знайомі: формули в математиці.
 
-Consider this math formula: <Math><MathI>y</MathI> = 2<MathI>x</MathI></Math>.
+Подивимося на таку формулу: <Math><MathI>y</MathI> = 2<MathI>x</MathI></Math>.
 
-If <Math><MathI>x</MathI> = 2</Math> then <Math><MathI>y</MathI> = 4</Math>. Always. 
+Якщо <Math><MathI>x</MathI> = 2</Math>, тоді <Math><MathI>y</MathI> = 4</Math>. Завжди. 
 
-If <Math><MathI>x</MathI> = 3</Math> then <Math><MathI>y</MathI> = 6</Math>. Always. 
+Якщо <Math><MathI>x</MathI> = 3</Math>, тоді <Math><MathI>y</MathI> = 6</Math>. Завжди. 
 
-If <Math><MathI>x</MathI> = 3</Math>, <MathI>y</MathI> won't sometimes be <Math>9</Math> or <Math>–1</Math> or <Math>2.5</Math> depending on the time of day or the state of the stock market. 
+Якщо <Math><MathI>x</MathI> = 3</Math>, <MathI>y</MathI> не рівнятиметься іноді <Math>9</Math>, або <Math>–1</Math>, або <Math>2.5</Math>, залежно від часу доби чи стану фондового ринку. 
 
-If <Math><MathI>y</MathI> = 2<MathI>x</MathI></Math> and <Math><MathI>x</MathI> = 3</Math>, <MathI>y</MathI> will _always_ be <Math>6</Math>. 
+Якщо <Math><MathI>y</MathI> = 2<MathI>x</MathI></Math> та <Math><MathI>x</MathI> = 3</Math>, <MathI>y</MathI> _завжди_ рівнятиметься <Math>6</Math>. 
 
-If we made this into a JavaScript function, it would look like this:
+Якщо ми перетворимо цю формулу на функцію JavaScript, вона виглядатиме так:
 
 ```js
 function double(number) {
@@ -43,9 +43,9 @@ function double(number) {
 }
 ```
 
-In the above example, `double` is a **pure function.** If you pass it `3`, it will return `6`. Always.
+У прикладі вище, `double` є **чиста функція.** Якщо їй передати `3`, вона поверне `6`. Завжди.
 
-React is designed around this concept. **React assumes that every component you write is a pure function.** This means that React components you write must always return the same JSX given the same inputs:
+React побудований саме на цій концепції. **React припускає, що кожен написаний компонент є чиста функція.** Це означає, що компоненти React, які ви пишете, мушуть повертати однаковий JSX, якщо дані однакові входи:
 
 <Sandpack>
 
@@ -53,9 +53,9 @@ React is designed around this concept. **React assumes that every component you 
 function Recipe({ drinkers }) {
   return (
     <ol>    
-      <li>Boil {drinkers} cups of water.</li>
-      <li>Add {drinkers} spoons of tea and {0.5 * drinkers} spoons of spice.</li>
-      <li>Add {0.5 * drinkers} cups of milk to boil and sugar to taste.</li>
+      <li>Закип'ятити {drinkers} стаканів води.</li>
+      <li>Додати {drinkers} ложок чаю і {0.5 * drinkers} ложок спецій.</li>
+      <li>Додати {0.5 * drinkers} стаканів молока й сахару на смак.</li>
     </ol>
   );
 }
@@ -63,10 +63,10 @@ function Recipe({ drinkers }) {
 export default function App() {
   return (
     <section>
-      <h1>Spiced Chai Recipe</h1>
-      <h2>For two</h2>
+      <h1>Рецепт Spiced Chai</h1>
+      <h2>Для двох</h2>
       <Recipe drinkers={2} />
-      <h2>For a gathering</h2>
+      <h2>Для групи</h2>
       <Recipe drinkers={4} />
     </section>
   );
@@ -75,21 +75,21 @@ export default function App() {
 
 </Sandpack>
 
-When you pass `drinkers={2}` to `Recipe`, it will return JSX containing `2 cups of water`. Always. 
+Коли до `Recipe` передається `drinkers={2}`, компонент повертає JSX, що містить текст `2 cups of water`. Завжди. 
 
-If you pass `drinkers={4}`, it will return JSX containing `4 cups of water`. Always.
+Якщо передається `drinkers={4}`, він повертає JSX, що містить текст `4 cups of water`. Завжди.
 
-Just like a math formula. 
+Так само як і математична формула. 
 
-You could think of your components as recipes: if you follow them and don't introduce new ingredients during the cooking process, you will get the same dish every time. That "dish" is the JSX that the component serves to React to [render.](/learn/render-and-commit)
+Про компоненти можна міркувати як про рецепти: якщо їх дотримуватись і не додавати нових інгредієнтів під час процесу приготування, кожного разу вийде та сама страва. Саме ця «страва» є JSX, який компонент передає до React для [рендеру.](/learn/render-and-commit)
 
-<Illustration src="/images/docs/illustrations/i_puritea-recipe.png" alt="A tea recipe for x people: take x cups of water, add x spoons of tea and 0.5x spoons of spices, and 0.5x cups of milk" />
+<Illustration src="/images/docs/illustrations/i_puritea-recipe.png" alt="Рецепт чаю для x людей: взяти x стаканів води, додати x ложок чаю, 0.5x ложок спецій та 0.5x стаканів молока" />
 
-## Side Effects: (un)intended consequences {/*side-effects-unintended-consequences*/}
+## Побічні ефекти: (не)навмисні наслідки {/*side-effects-unintended-consequences*/}
 
-React's rendering process must always be pure. Components should only *return* their JSX, and not *change* any objects or variables that existed before rendering—that would make them impure!
+Процес рендеру React завжди мусить бути чистий. Компоненти мушуть лише *повертати* JSX і не *міняти* об'екти або змінні, що існували перед рендером — це зробить їх нечистими!
 
-Here is a component that breaks this rule:
+Ось компонент, що порушує це правило:
 
 <Sandpack>
 
@@ -97,9 +97,9 @@ Here is a component that breaks this rule:
 let guest = 0;
 
 function Cup() {
-  // Bad: changing a preexisting variable!
+  // Погано: міняємо існуючу заздалегідь змінну!
   guest = guest + 1;
-  return <h2>Tea cup for guest #{guest}</h2>;
+  return <h2>Чашка чаю для гостя №{guest}</h2>;
 }
 
 export default function TeaSet() {
@@ -115,17 +115,17 @@ export default function TeaSet() {
 
 </Sandpack>
 
-This component is reading and writing a `guest` variable declared outside of it. This means that **calling this component multiple times will produce different JSX!** And what's more, if _other_ components read `guest`, they will produce different JSX, too, depending on when they were rendered! That's not predictable.
+Цей компонент читає та переписує змінну `guest`, що була оголошена зовні. Це означає, що **з кожним викликом компоненту він повертатиме різний JSX!** Більш того, якщо _інші_ компоненти читатимуть `guest`, вони також повертатимуть різний JSX залежно від того, коли відбувся їх рендер! Це непередбачувано.
 
-Going back to our formula <Math><MathI>y</MathI> = 2<MathI>x</MathI></Math>, now even if <Math><MathI>x</MathI> = 2</Math>, we cannot trust that <Math><MathI>y</MathI> = 4</Math>. Our tests could fail, our users would be baffled, planes would fall out of the sky—you can see how this would lead to confusing bugs!
+Повертаючись до формули <Math><MathI>y</MathI> = 2<MathI>x</MathI></Math>, тепер навіть якщо <Math><MathI>x</MathI> = 2</Math>, ми не можемо бути впевненими, що <Math><MathI>y</MathI> = 4</Math>. Наші тести можуть провалитися, наші користувачі будуть збиті з пантелику, літаки попадають з неба — очевидно, як саме це призведе до заплутаних помилок!
 
-You can fix this component by [passing `guest` as a prop instead](/learn/passing-props-to-a-component):
+Цей компонент можна виправити, якщо [передавати `guest` як проп](/learn/passing-props-to-a-component):
 
 <Sandpack>
 
 ```js
 function Cup({ guest }) {
-  return <h2>Tea cup for guest #{guest}</h2>;
+  return <h2>Чашка чаю для гостя №{guest}</h2>;
 }
 
 export default function TeaSet() {
@@ -141,37 +141,37 @@ export default function TeaSet() {
 
 </Sandpack>
 
-Now your component is pure, as the JSX it returns only depends on the `guest` prop.
+Тепер компонент є чистий, бо JSX, що він повертає, залежить лише від пропу `guest`.
 
-In general, you should not expect your components to be rendered in any particular order. It doesn't matter if you call <Math><MathI>y</MathI> = 2<MathI>x</MathI></Math> before or after <Math><MathI>y</MathI> = 5<MathI>x</MathI></Math>: both formulas will resolve independently of each other. In the same way, each component should only "think for itself", and not attempt to coordinate with or depend upon others during rendering. Rendering is like a school exam: each component should calculate JSX on their own!
+Взагалі не слід покладатися на фіксований порядок рендеру компонентів. Немає різниці, чи викликається <Math><MathI>y</MathI> = 2<MathI>x</MathI></Math> перед або після <Math><MathI>y</MathI> = 5<MathI>x</MathI></Math>: обидві формули дадуть результат незалежно одна від одної. Таким самим чином кожному компоненту під час рендеру слід «думати про себе» й ні залежити від інших компонентів, ні намагатися координувати свій рендер з ними. Рендер — як екзамен у школі: кожен компонент має обчислювати свій JSX сам!
 
 <DeepDive>
 
-#### Detecting impure calculations with StrictMode {/*detecting-impure-calculations-with-strict-mode*/}
+#### Виявлення нечистих обчислювань за допомогою StrictMode {/*detecting-impure-calculations-with-strict-mode*/}
 
-Although you might not have used them all yet, in React there are three kinds of inputs that you can read while rendering: [props](/learn/passing-props-to-a-component), [state](/learn/state-a-components-memory), and [context.](/learn/passing-data-deeply-with-context) You should always treat these inputs as read-only.
+Хоча ви, можливо, ще не використовували їх усі, у React є три види входів, які можна зчитувати під час рендеру: [пропси](/learn/passing-props-to-a-component), [стан](/learn/state-a-components-memory) та [контекст.](/learn/passing-data-deeply-with-context) До цих входів слід завжди ставитися як до даних лише для читання.
 
-When you want to *change* something in response to user input, you should [set state](/learn/state-a-components-memory) instead of writing to a variable. You should never change preexisting variables or objects while your component is rendering.
+Якщо у відповідь на введення користувача треба щось *змінити*, слід [встановити стан](/learn/state-a-components-memory), замість того щоб переписувати змінну. Не слід змінювати вже існуючі змінні та об'екти під час рендеру.
 
-React offers a "Strict Mode" in which it calls each component's function twice during development. **By calling the component functions twice, Strict Mode helps find components that break these rules.**
+React пропонує «строгий режим» (Strict Mode), у якому він викликає функцію кожного компоненту двічі під час розробки. **Викликаючи функції компонентів двічі, Strict Mode допомагає знайти компоненти, що порушують ці правила.**
 
-Notice how the original example displayed "Guest #2", "Guest #4", and "Guest #6" instead of "Guest #1", "Guest #2", and "Guest #3". The original function was impure, so calling it twice broke it. But the fixed pure version works even if the function is called twice every time. **Pure functions only calculate, so calling them twice won't change anything**--just like calling `double(2)` twice doesn't change what's returned, and solving <Math><MathI>y</MathI> = 2<MathI>x</MathI></Math> twice doesn't change what <MathI>y</MathI> is. Same inputs, same outputs. Always.
+Зверніть увагу, як у первісному прикладі відображалися пункти «гість №2», «гість №4» та «гість №6» замість «гість №1», «гість №2» та «гість №3». Первісна функція була нечиста, тому подвійний виклик її ламає. Але виправлений чистий варіант працює навіть якщо функція кожного разу викликається двічі. **Чисті функції виконують лише обчислення, тому подвійний виклик нічого не змінить** — так само як подвійний виклик `double(2)` не змінює повертаємий результат, а подвійне вирішення <Math><MathI>y</MathI> = 2<MathI>x</MathI></Math> не змінює значення <MathI>y</MathI>. Однакові входи, однакові виходи. Завжди.
 
-Strict Mode has no effect in production, so it won't slow down the app for your users. To opt into Strict Mode, you can wrap your root component into `<React.StrictMode>`. Some frameworks do this by default.
+Strict Mode не діє в продакшні, тому він не сповільнюватиме застосунок для користувачів. Щоб увімкнути Strict Mode, можна загорнути кореневий компонент у вузол `<React.StrictMode>`. Деякі фреймворки вже роблять це із самого початку.
 
 </DeepDive>
 
-### Local mutation: Your component's little secret {/*local-mutation-your-components-little-secret*/}
+### Локальні мутації: Невеличка таємниця компоненту {/*local-mutation-your-components-little-secret*/}
 
-In the above example, the problem was that the component changed a *preexisting* variable while rendering. This is often called a **"mutation"** to make it sound a bit scarier. Pure functions don't mutate variables outside of the function's scope or objects that were created before the call—that makes them impure!
+У прикладі вище проблема полягала у тому, що компонент міняв *вже існуючу* змінну під час рендеру. Це часто зветься **«мутацією»**, щоб звучало трішки страшніше. Чисті функції не мутують змінні поза межами функції та об'екти, що були створені перед викликом — це робить їх нечистими!
 
-However, **it's completely fine to change variables and objects that you've *just* created while rendering.** In this example, you create an `[]` array, assign it to a `cups` variable, and then `push` a dozen cups into it:
+Однак **міняти змінні та об'екти, що ви *тільки що* створили під час рендеру, не заборонено.** У цьому прикладі створюється порожній масив `[]`, що призначується до змінної `cups`, а потім до нього додаються за допомогою `push` дванадцять чашок:
 
 <Sandpack>
 
 ```js
 function Cup({ guest }) {
-  return <h2>Tea cup for guest #{guest}</h2>;
+  return <h2>Чашка чаю для гостя №{guest}</h2>;
 }
 
 export default function TeaGathering() {
@@ -185,43 +185,43 @@ export default function TeaGathering() {
 
 </Sandpack>
 
-If the `cups` variable or the `[]` array were created outside the `TeaGathering` function, this would be a huge problem! You would be changing a *preexisting* object by pushing items into that array.
+Якщо б змінна `cups` або масив `[]` були створені поза функцією `TeaGathering`, це була б величезна проблема! Виконувалася б зміна *вже існуючого* об'екту через додавання до масиву нових елементів.
 
-However, it's fine because you've created them *during the same render*, inside `TeaGathering`. No code outside of `TeaGathering` will ever know that this happened. This is called **"local mutation"**—it's like your component's little secret.
+Однак проблеми немає, адже змінна та масив створені *під час самого рендеру* всередині `TeaGathering`. Жодний рядок коду поза `TeaGathering` не знатиме, що там відбулося. Це називається **локальною мутацією** — свого роду невеличка таємниця компоненту.
 
-## Where you _can_ cause side effects {/*where-you-_can_-cause-side-effects*/}
+## Де _можна_ викликати побічні ефекти {/*where-you-_can_-cause-side-effects*/}
 
-While functional programming relies heavily on purity, at some point, somewhere, _something_ has to change. That's kind of the point of programming! These changes—updating the screen, starting an animation, changing the data—are called **side effects.** They're things that happen _"on the side"_, not during rendering.
+Хоча функціональне програмування дуже сильно покладається на концепцію чистоти, щось десь _має_ зазнати змін. Адже це і є суть програмування! Ці зміни — оновлення екрану, початок анімації, зміна даних — називаються **побічними ефектами.** Вони є те, що відбувається _«на стороні»_, а не під час рендеру.
 
-In React, **side effects usually belong inside [event handlers.](/learn/responding-to-events)** Event handlers are functions that React runs when you perform some action—for example, when you click a button. Even though event handlers are defined *inside* your component, they don't run *during* rendering! **So event handlers don't need to be pure.**
+У React **побічним ефектам, як правило, місце в [обробниках подій.](/learn/responding-to-events)** Обробники подій є функції, які React викликає, коли виконується якась дія — наприклад, коли користувач тисне на кнопку. І хоча обробники подій визначаються *всередині* компоненту, вони не виконуються *під час* рендеру! **Тому обробники подій не мають бути чистими.**
 
-If you've exhausted all other options and can't find the right event handler for your side effect, you can still attach it to your returned JSX with a [`useEffect`](/reference/react/useEffect) call in your component. This tells React to execute it later, after rendering, when side effects are allowed. **However, this approach should be your last resort.**
+Якщо жоден з обробників подій не пасує й більше нема варіантів, куди можна додати потрібний побічний ефект, його можна додати до повертаємого JSX за допомогою виклику [`useEffect`](/reference/react/useEffect) в компоненті. Так React зможе виконати цей ефект пізніше, після рендеру, коли побічні ефекти не заборонені. **Однак цей підхід слід застосовувати як останній засіб.**
 
-When possible, try to express your logic with rendering alone. You'll be surprised how far this can take you!
+Коли це можливо, намагайтесь виразити логіку одним лише рендером. Цей підхід спроможен вирішити на диво багато різних завданнь!
 
 <DeepDive>
 
-#### Why does React care about purity? {/*why-does-react-care-about-purity*/}
+#### Чому для React важлива чистота? {/*why-does-react-care-about-purity*/}
 
-Writing pure functions takes some habit and discipline. But it also unlocks marvelous opportunities:
+Для написання чистих функцій потрібно сформувати звичку і дотримуватися дісципліни. Але вони також відкривають чудові можливості:
 
-* Your components could run in a different environment—for example, on the server! Since they return the same result for the same inputs, one component can serve many user requests.
-* You can improve performance by [skipping rendering](/reference/react/memo) components whose inputs have not changed. This is safe because pure functions always return the same results, so they are safe to cache.
-* If some data changes in the middle of rendering a deep component tree, React can restart rendering without wasting time to finish the outdated render. Purity makes it safe to stop calculating at any time.
+* Компоненти зможуть працювати в іншому середовищі — наприклад, на сервері! Оскільки вони повертають однаковий результат для однакових входів, один компонент може обробляти одразу декілька запитів користувачів.
+* За допомогою [пропуску рендеру](/reference/react/memo) компонентів, для яких не змінилися входи, можна покращити їх продуктивність. Це безпечно, адже чисті функції завжди повертають однакові результати, тому їх можна безпечно кешувати.
+* Якщо деякі дані змінюються під час рендеру глибокого дерева компонентів, React може почати рендер знову, не витрачаючи зайвого часу на завершення застарілого рендеру. Завдяки чистоті рендер можна безпечно припинити в будь-який час.
 
-Every new React feature we're building takes advantage of purity. From data fetching to animations to performance, keeping components pure unlocks the power of the React paradigm.
+Кожна нова особливість React, яку ми розроблюємо, так чи інакше користується чистотою. Від завантаження даних до анімацій і продуктивності, дотримання концепції чистоти компонентів розкриває всю силу парадигми React.
 
 </DeepDive>
 
 <Recap>
 
-* A component must be pure, meaning:
-  * **It minds its own business.** It should not change any objects or variables that existed before rendering.
-  * **Same inputs, same output.** Given the same inputs, a component should always return the same JSX. 
-* Rendering can happen at any time, so components should not depend on each others' rendering sequence.
-* You should not mutate any of the inputs that your components use for rendering. That includes props, state, and context. To update the screen, ["set" state](/learn/state-a-components-memory) instead of mutating preexisting objects.
-* Strive to express your component's logic in the JSX you return. When you need to "change things", you'll usually want to do it in an event handler. As a last resort, you can `useEffect`.
-* Writing pure functions takes a bit of practice, but it unlocks the power of React's paradigm.
+* Компонент має бути чистим, тобто:
+  * **Не сувати носа у чужі справи.** Він не має зміняти ніякі об'екти або змінні, що існували перед рендером.
+  * **Однакові входи, однакові виходи.** Якщо дані однакові входи, компонент завжди має повертати однаковий JSX.
+* Рендер може статися будь-коли, тому компоненти мають не залежити від порядку рендера один одного.
+* Не слід мутувати будь-які з входів, які компоненти використовують для рендеру. Сюди входять пропси, стан та контекст. Для оновлення екрана слід [встановлювати стан](/learn/state-a-components-memory) замість мутації вже існуючих об'єктів.
+* Слід намагатися виразити логіку компоненту безпосередньо в повертаємому JSX. Коли щось потрібно «змінити», зазвичай це слід зробити в обробнику подій. Як останній засіб також можна використати `useEffect`.
+* Написання чистих функцій потребує практики, але воно розкриває силу парадигми React.
 
 </Recap>
 
@@ -229,15 +229,15 @@ Every new React feature we're building takes advantage of purity. From data fetc
   
 <Challenges>
 
-#### Fix a broken clock {/*fix-a-broken-clock*/}
+#### Ремонт годинника {/*fix-a-broken-clock*/}
 
-This component tries to set the `<h1>`'s CSS class to `"night"` during the time from midnight to six hours in the morning, and `"day"` at all other times. However, it doesn't work. Can you fix this component?
+Цей компонент намагається встановити CSS-клас елемента `<h1>` на `"night"` у час між опівночі та шостою годиною ранку, та на `"day"` у всі інші часи. Однак він не працює. Чи ви можете виправити компонент?
 
-You can verify whether your solution works by temporarily changing the computer's timezone. When the current time is between midnight and six in the morning, the clock should have inverted colors!
+Своє рішення ви можете перевірити тимчасовою зміною часового поясу. Коли поточний час знаходиться між опівночі та шостою годиною ранку, кольори годинника мають бути інвертовані!
 
 <Hint>
 
-Rendering is a *calculation*, it shouldn't try to "do" things. Can you express the same idea differently?
+Рендер є *обчисленням*, йому не слід щось «робити». Чи можна виразити цю саму ідею інакше?
 
 </Hint>
 
@@ -301,7 +301,7 @@ body > * {
 
 <Solution>
 
-You can fix this component by calculating the `className` and including it in the render output:
+Цей компонент можна виправити, обчислюючи значення `className` та додаючи його в результат рендеру:
 
 <Sandpack>
 
@@ -362,19 +362,19 @@ body > * {
 
 </Sandpack>
 
-In this example, the side effect (modifying the DOM) was not necessary at all. You only needed to return JSX.
+У цьому прикладі побічний ефект (модифікація DOM) був взагалі не потрібен. Треба було всього лише повертати JSX.
 
 </Solution>
 
-#### Fix a broken profile {/*fix-a-broken-profile*/}
+#### Виправити поламаний профіль {/*fix-a-broken-profile*/}
 
-Two `Profile` components are rendered side by side with different data. Press "Collapse" on the first profile, and then "Expand" it. You'll notice that both profiles now show the same person. This is a bug.
+Два компоненти `Profile` відрендерені з боків з різними даними. Натисніть «Collapse» у першому профілі, а потім натисніть «Expand». Як можна помітити, обидва профілі тепер показуть ту ж саму людину. Це є помилка.
 
-Find the cause of the bug and fix it.
+Знайдіть причину помилки та виправте її.
 
 <Hint>
 
-The buggy code is in `Profile.js`. Make sure you read it all from top to bottom!
+Код з помилкою знаходиться в `Profile.js`. Уважно прочитайте його від початку до кінця!
 
 </Hint>
 
@@ -475,9 +475,9 @@ h1 { margin: 5px; font-size: 18px; }
 
 <Solution>
 
-The problem is that the `Profile` component writes to a preexisting variable called `currentPerson`, and the `Header` and `Avatar` components read from it. This makes *all three of them* impure and difficult to predict.
+Проблема полягає в тому, що компонент `Profile` переписує вже існуючу змінну `currentPerson`, а компоненти `Header` і `Avatar` читають її значення. Це робить *всі три компоненти* нечистими, а їх поведінку — непередбачуваною.
 
-To fix the bug, remove the `currentPerson` variable. Instead, pass all information from `Profile` to `Header` and `Avatar` via props. You'll need to add a `person` prop to both components and pass it all the way down.
+Щоб виправити помилку, видаліть змінну `currentPerson`. Натомість передайте всю інформацію з `Profile` до `Header` і `Avatar` пропсами. Вам буде потрібно додати проп `person` до обох компонентів і передати його до самого низу.
 
 <Sandpack>
 
@@ -571,15 +571,15 @@ h1 { margin: 5px; font-size: 18px; }
 
 </Sandpack>
 
-Remember that React does not guarantee that component functions will execute in any particular order, so you can't communicate between them by setting variables. All communication must happen through props.
+Пам'ятайте, що React не надає гарантій, що функції компонентів будуть виконані у фіксованому порядку, тому комунікація між компонентами за допомогою запису до змінних не є можлива. Вся комунікація має виконуватись за допомогою пропсів.
 
 </Solution>
 
 #### Fix a broken story tray {/*fix-a-broken-story-tray*/}
 
-The CEO of your company is asking you to add "stories" to your online clock app, and you can't say no. You've written a `StoryTray` component that accepts a list of `stories`, followed by a "Create Story" placeholder.
+CEO вашої компанії просить вас додати до мобільного застосунку годинника «сторіси», і відмовити не можна. Ви написали компонент `StoryTray`, що приймає перелік `stories` та додає плейсхолдер створення розповіді в кінці.
 
-You implemented the "Create Story" placeholder by pushing one more fake story at the end of the `stories` array that you receive as a prop. But for some reason, "Create Story" appears more than once. Fix the issue.
+Ви реалізували плейсхолдер створеня розповіді за допомогою додання фейкової розповіді в кінець масиву `stories`, який отримується як проп. Але цей плейсхолдер чомусь відображається більше одного разу. Виправіть проблему.
 
 <Sandpack>
 
@@ -675,11 +675,11 @@ li {
 
 <Solution>
 
-Notice how whenever the clock updates, "Create Story" is added *twice*. This serves as a hint that we have a mutation during rendering--Strict Mode calls components twice to make these issues more noticeable.
+Зверніть увагу на те, як «Create Story» додається двічі кожного разу, коли відновляється годинник. Це є підказка, що десь під час рендеру в нас виконується мутація — Strict Mode викликає компоненти двічі, щоб такі помилки були помітніші.
 
-`StoryTray` function is not pure. By calling `push` on the received `stories` array (a prop!), it is mutating an object that was created *before* `StoryTray` started rendering. This makes it buggy and very difficult to predict.
+Функція `StoryTray` не є чиста. Викликаючи `push` для отриманого масиву `stories` (що є проп!), вона мутує об'єкт, що був створений *перед* рендером `StoryTray`. Це робить поведінку компонента дуже непередбачуваною.
 
-The simplest fix is to not touch the array at all, and render "Create Story" separately:
+Найпростіше вирішення проблеми є взагалі не чіпати масив і рендерити «Create Story» окремо:
 
 <Sandpack>
 
@@ -763,7 +763,7 @@ li {
 
 </Sandpack>
 
-Alternatively, you could create a _new_ array (by copying the existing one) before you push an item into it:
+Також можна створити _новий_ масив (копію існуючого) перед тим як додавати до нього новий елемент:
 
 <Sandpack>
 
@@ -855,9 +855,9 @@ li {
 
 </Sandpack>
 
-This keeps your mutation local and your rendering function pure. However, you still need to be careful: for example, if you tried to change any of the array's existing items, you'd have to clone those items too.
+Це локалізує мутацію та робить функцію чистою. Однак все одно треба бути уважними: наприклад, якщо потрібно змінити ще й якісь із існуючих елементів масиву, потрібно буде склонувати і їх також.
 
-It is useful to remember which operations on arrays mutate them, and which don't. For example, `push`, `pop`, `reverse`, and `sort` will mutate the original array, but `slice`, `filter`, and `map` will create a new one.
+Корисно пам'ятати, які саме операції над масивами їх мутують, а які — ні. Наприклад, `push`, `pop`, `reverse` та `sort` мутують існуючий масив, а ось `slice`, `filter` та `map` створюють новий.
 
 </Solution>
 
